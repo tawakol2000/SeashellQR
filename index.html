@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>QR Code Pass</title>
   <style>
     body {
@@ -11,47 +11,17 @@
       flex-direction: column;
       align-items: center;
       padding: 20px;
-      background-color: #f5f5f5;
     }
     input, button {
-      margin: 8px;
+      margin: 10px;
       padding: 10px;
       font-size: 1em;
       width: 90%;
-      max-width: 400px;
     }
-    button {
-      background-color: #007AFF;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    #result {
-      margin-top: 30px;
-      background-color: white;
-      padding: 20px;
-      border-radius: 16px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      width: 90%;
-      max-width: 400px;
-      text-align: center;
-    }
-    #userImage {
-      border-radius: 50%;
-      width: 90px;
-      height: 90px;
-      object-fit: cover;
-      margin-bottom: 10px;
-    }
-    #qrCode {
-      margin-top: 10px;
+    img {
+      margin-top: 20px;
       width: 200px;
       height: 200px;
-    }
-    #qrDate {
-      margin-top: 5px;
-      font-size: 0.9em;
-      color: #666;
     }
   </style>
 </head>
@@ -63,10 +33,10 @@
   <button onclick="submitForm()">Submit</button>
 
   <div id="result" style="display: none">
-    <img id="userImage" src="" alt="User Image" />
     <h3 id="displayName"></h3>
+    <img id="userImage" src="" alt="User Image" />
+    <h4 id="qrDate"></h4>
     <img id="qrCode" src="" alt="QR Code" />
-    <div id="qrDate"></div>
   </div>
 
   <script>
@@ -80,10 +50,14 @@
         return;
       }
 
-      fetch("https://newgiza.my.site.com/OneCommunity/services/apexrest/api/accessCode?UnitId=a0Z4K000000LkSMUA0", {
+      const proxy = "https://corsproxy.io/?";
+      const url = "https://newgiza.my.site.com/OneCommunity/services/apexrest/api/accessCode?UnitId=a0Z4K000000LkSMUA0";
+
+      fetch(proxy + encodeURIComponent(url), {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${token}`
+          "Authorization": `Bearer ${token}`,
+          "Accept": "*/*"
         }
       })
       .then(res => res.json())
