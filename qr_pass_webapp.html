@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Create Gate Pass</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/build/qrcode.min.js"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: #f6f6f6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 24px;
+      border-radius: 20px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      max-width: 340px;
+      width: 100%;
+    }
+    input[type="text"], input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+    .btn {
+      background: black;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 16px;
+      width: 100%;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Create Gate Pass</h2>
+    <input type="file" id="photoInput" accept="image/*">
+    <input type="text" id="nameInput" placeholder="Enter your name">
+    <button class="btn" onclick="createPass()">Generate</button>
+  </div>
+
+  <script>
+    async function createPass() {
+      const name = document.getElementById('nameInput').value;
+      const photo = document.getElementById('photoInput').files[0];
+
+      if (!name || !photo) {
+        alert("Please provide both name and photo.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = async function(event) {
+        localStorage.setItem('profileName', name);
+        localStorage.setItem('profilePhoto', event.target.result);
+
+        const bearerToken = "AQEAQHk2HUy32A6WoeYdZtpXQ8YusVNuM5bP.yFTN6eWlWE4Kp5y21OalMBpvaN2jmwZQYwgh5NEX.HhUCcAEB_A345l6dg3.";
+        const unitId = "a0Z4K000000LkSMUA0";
+
+        try {
+          const res = await fetch(
+            `https://newgiza.my.site.com/OneCommunity/services/apexrest/api/accessCode?UnitId=${unitId}`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${bearerToken}`,
+                Accept: "application/json"
+              }
+            }
+          );
+
+          const data = await res.json();
+          localStorage.setItem('qrContent', data.qrCode || data.code || JSON.stringify(data));
+
+          window.location.href = 'display.html';
+        } catch (err) {
+          alert("Failed to fetch QR code.");
+        }
+      };
+      reader.readAsDataURL(photo);
+    }
+  </script>
+</body>
+</html>
